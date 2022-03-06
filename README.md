@@ -40,7 +40,4 @@ pip3 install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/
 如果您使用这套代码，开发搭建过程中有任何问题，可以去问我学院（www.wenwoha.com） 上面找联系方式联系我们，也可以直接加我的微信：LGZAXE
 
 
-### 三.部分功能截图
-
-
 
