@@ -1,0 +1,72 @@
+{% load staticfiles %}
+<style>
+    .article-meta p{
+        margin-top: 16px;
+    }
+</style>
+<aside class="post-right hidden-xs">
+    <section class="widget post-right-item">
+        <div class="article-meta">
+            <p class="item">
+                <i class="glyphicon glyphicon-time" style="margin-right: 10px"></i>
+                {{ activity_show.acttime }}
+            </p>
+            <p class="item">
+                <i class="glyphicon glyphicon-map-marker" style="margin-right: 10px"></i>
+                {{ activity_show.position }}
+            </p>
+            <p class="item">
+                <i class="glyphicon glyphicon-home" style="margin-right: 10px"></i>
+                {{ activity_show.company }}
+            </p>
+            <p class="item">
+                <i class="glyphicon glyphicon-user" style="margin-right: 10px"></i>
+                {{ activity_show.person }}
+            </p>
+        </div>
+    </section>
+    <section class="widget post-right-item" style="padding-top:0px">
+      <div style="height:60px; width:100%; font-size:8px; display:inline-flex; vertical-align:middle;">
+        <img style="margin-top:15px" height="48" width="48" src="../static/picture/atention.png"/>
+        <p style="margin-top:15px; padding-left:12px;">
+            投资有风险，入市需谨慎，知鱼财经所有新闻与资讯不作为投资建议
+        </p>
+      </div>
+    </section>
+    <section class="widget post-right-item" style="padding-top:0px">
+        <div class="recommend  hidden-xs">
+                <div class="head clearfix"><span class="sp">知鱼精选:</span></div>
+                <ul>
+                    {% for hact in hot_activity %}
+                    <li>
+                     <div class="pic">
+                       <a href="{% url 'index' %}activity_show-{{ hact.id }}.html" title="{{ hact.title }}">
+                       <img src="{% url 'index' %}media/{{ hact.img }}"
+                         srcset="{% url 'index' %}media/{{ hact.img }}"
+                         alt="{{ hact.title }}" class="wp-post-image" width="145" height="100"/></a>
+                      </div>
+                        <a class="descript " href="{% url 'index' %}activity_show-{{ hact.id }}.html" rel="bookmark"
+                           title="{{ hact.title }}">{{ hact.title }}</a>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+    </section>
+
+
+    <div class="post-right-item">
+        <h4 class="post-right-title">关注我们</h4>
+        <div class="wid-about">
+            <p>知鱼财经，在这里让您真正懂区块链</p>
+            <img src="../static/picture/weixinqr.jpg" alt="知鱼财经，在这里让您真正懂区块链" width="160" height="160">
+        </div>
+        <div class="wid-about">
+            <p><strong>联系方式:</strong></p>
+            <p>电话: 13752102267</p>
+            <p>微信: 13752102267</p>
+            <p>Email: zhiyucaijing@163.com</p>
+        </div>
+    </div>
+</aside>
+
+

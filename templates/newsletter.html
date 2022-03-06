@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<style>
+.newsfalsh-home_day {
+    background: white;
+    padding-left:20px;
+    height: 50px;
+    line-height: 50px;
+    color: #0000cc;
+    font-weight:bolder;
+    font-size: 16px;
+}
+</style>
+    <div id="main-container" class="container clearfix">
+     <section class="post-left">
+        <div class="newsfalsh-home_day fs14"> {{ months }}月{{ days }}日 . {{ dateday }}</div>
+        <div class="index-main clearfix" style="margin-top:15px">
+            <div style="margin-top:15px" class="record-list">
+                {% for a in allnewsletter %}
+                <div class="article-box clearfix excerpt-1">
+                    <div class="article-meta" style="display:flex; justify-content: flex-start;">
+                        <span class="item" style="margin:5px 0;width:10px;height:10px;border-radius:50%;background-color:#878787;"></span>
+                        <span class="item" style="margin-left:10px">{{ a.created_time }}</span>
+                    </div>
+                    <h5 style="font-size:16px; font-weight:bold;">{{ a.title }}</h5>
+                    <article class="article-content" style="margin-top:18px;">{{ a.content | safe }}</article>
+                    <div class="article-meta" style="margin-bottom:5px; float:right">
+                        <span class="item" onclick="Good(this, {{ a.id }})">利好：<span id="goodNews-{{ a.id }}">{{ a.good }}</span></span>
+                        <span class="item" onclick="Bad(this, {{ a.id }})">利空：<span id="badNews-{{ a.id }}">{{ a.bad }}</span></span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div style="margin-left:45%"><button class="more" id="More">点击加载更多</button></div>
+        </div>
+     </section>
+    {% include 'newsletter_right.html' %}
+</div>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+    <script>
+        function Good(obj, id) {
+            var url = window.location.href;
+            var temp_url = url.replace("newsletter", "newsgood");
+            var req_url = temp_url +"?id=" + id;
+            var goodIndex = id;
+            $.ajax({
+                url: req_url ,
+                data: {},
+                type: "GET",
+                dataType: "json",
+                success: function (result) {
+                    $('#goodNews-' + goodIndex ).text(result.total_good);
+                }
+            });
+        }
+
+        function Bad(obj, id) {
+            var url = window.location.href;
+            var temp_url = url.replace("newsletter", "newsbad");
+            var req_url = temp_url +"?id=" + id;
+            var goodIndex = id;
+            $.ajax({
+                url: req_url,
+                data: {},
+                type: "GET",
+                dataType: "json",
+                success: function (result) {
+                    $('#badNews-' + goodIndex).text(result.total_bad);
+                }
+             });
+        }
+
+        function formatTen(num) {
+           return num > 9 ? (num + "") : ("0" + num);
+        }
+
+        let formatDate = function (date) {
+            var date = new Date(new Date(date).valueOf() - 28800000);
+            var year = date.getFullYear();
+            var month = date.getMonth() + 1;
+            var day = date.getDate();
+            var hour = date.getHours();
+            var minute = date.getMinutes();
+            var second = date.getSeconds();
+            return year + "年" + formatTen(month) + "月" + formatTen(day + 1)+ "日 " + formatTen((hour-8))+ ":" + formatTen(minute);
+        };
+
+        var Dom = jQuery('.record-list');
+        var pages = 2;
+        let pk = 5;
+        jQuery('#More').on('click', function(){
+            let l_url=window.location.href;
+            let req_url = l_url+ "?page=" +  pages;
+            let html = '';
+            jQuery.ajax({
+                type:'GET',
+                url:req_url,
+                dataType:'json',
+                success:function(response, status) {
+                    if (response.ok === true) {
+                       let retData = JSON.parse(response.result.newsletter);
+                       if(retData.length > 1 ) {
+                           for(let i  = 0; i < retData.length; i++) {
+                            let hddatetime = formatDate(retData[i].fields.created_time);
+                            html += `
+                                <div class="article-box clearfix excerpt-1">
+                                    <div class="article-meta" style="display:flex; justify-content: flex-start;">
+                                        <span class="item" style="margin:5px 0;width:10px;height:10px;border-radius:50%;background-color:#878787;"></span>
+                                        <span class="item" style="margin-left:10px"> ${ hddatetime } </span>
+                                    </div>
+                                    <h5 style="font-size:16px; font-weight:bold;">${ retData[i].fields.title }</h5>
+                                    <article class="article-content" style="margin-top:18px;">${ retData[i].fields.content }</article>
+                                    <div class="article-meta" style="margin-bottom:5px; float:right">
+                                        <span class="item" onclick="Good(this, ${ retData[i].pk })">利好：<span id="goodNews-${ retData[i].pk }">${ retData[i].fields.good }</span></span>
+                                        <span class="item" onclick="Bad(this, ${ retData[i].pk })">利空：<span id="badNews-${ retData[i].pk }">${ retData[i].fields.bad }</span></span>
+                                    </div>
+                                </div>`
+                            }
+                            Dom.append(html);
+                       } else {
+                            jQuery('#More').text("没有了，已经见低了");
+                       }
+                    }
+                }
+            });
+            pages = pages + 1;
+        })
+
+    </script>
+    {% block panelScript %}
+    {% endblock %}
+{% endblock %}

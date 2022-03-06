@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="main-container" class="container clearfix">
+    <div class="index-main clearfix">
+        <div class="row">
+         <div class="article-box clearfix excerpt-1">
+            {% for latart in act_list %}
+                <a href="{% url 'index' %}activity_show-{{ latart.id }}.html" title="{{ latart.title }}">
+                      <div class="col-md-4">
+                        <div class="thumbnail">
+                          <img style="height:280px" src="{% url 'index' %}media/{{ latart.img }}" srcset="{% url 'index' %}media/{{ latart.img }}" alt="aaa">
+                          <div class="caption">
+                            <h4>{{ latart.title }}</h4>
+                            {% if latart.is_active == True %}
+                            <p style="margin-top: 15px;overflow: hidden;clear: both;"><span style="float: left">{{ latart.company }}</span> <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                                报名中
+                                </span>
+                            </p>
+                            {% elif latart.is_active != True %}
+                                 <p style="margin-top: 15px;overflow: hidden;clear: both;"><span style="float: left">{{ latart.company }}</span> <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                                已结束
+                                 </span>
+                            </p>
+                            {% endif %}
+                              <p>{{latart.created_time }}</p>
+                          </div>
+                        </div>
+                      </div>
+                 </a>
+            {% endfor %}
+         </div>
+            <div class="pagination">
+                <ul>
+                    {% if act_list.has_previous %}
+                    <li class="prev-page"><a href="?page={{ act_list.previous_page_number }}">上一页</a></li>
+                    {% else %}
+                     <li class="prev-page"></li>
+                    {% endif %}
+                        {% for num in act_list.paginator.page_range %}
+                            {% if num %}
+                                {% ifequal num act_list.number %}
+                                    <li class="active"><span>{{ num }}</span></li>
+                                {% else %}
+                                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+                                {% endifequal %}
+                            {% else %}
+                                <li class="disabled"><span>...</span></li>
+                            {% endif %}
+                        {% endfor %}
+
+
+                        {% if act_list.has_next %}
+                            <li class="next-page"><a href="?page={{ act_list.next_page_number }}">下一页</a></li>
+                        {% else %}
+                            <li class="prev-page"></li>
+                        {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<style>
+	.coin-item{
+		text-align:center;
+		color:gray;
+	}	
+	.coin-items {
+		margin-top:6px;	
+	}
+</style>
+<link type="text/css" rel="stylesheet" href='{% static "css/swap.css" %}'>
+<div id="main-container" class="container clearfix">
+	<section class="post-left">
+		<div class="index-main clearfix">
+			<table class="rprice table text-cemnter">
+				<tr class="coin-item">
+					<td>排行榜</td>
+					<td>币种</td>
+					<td>流通市值(¥)</td>
+					<td>流通市值($)</td>
+					<td>全球指数(¥)</td>
+					<td>24H额(¥)</td>
+				  <td>24H换手</td>
+				  <td>24H涨幅</td>
+				</tr>
+			</table>
+		</div>
+	</section>
+	{% include 'price_right.html' %}
+</div>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script>
+    var pages = 2;
+    var Dom = jQuery('.rprice');
+    let req_url = window.location.href;
+    let html = '';
+    jQuery.ajax({
+        type:'GET',
+        url:req_url,
+        dataType:'json',
+        success:function(response, status) {
+            var retData = response.result.data.data;
+            for(let i  = 0; i < retData.length; i++) { 
+            	var market = parseFloat(retData[i].market_value *  0.00000001)
+            	var mar = Math.round(market * 100) / 100
+            	var caps = parseFloat(retData[i].marketcap * 0.00000001)
+            	var cap = Math.round(caps *100) / 100
+            	 html += `
+            	 <tr style="height:15px;"></tr>
+            	 <tr style="text-align:center">
+            	 		  <td>${retData[i].rank}</td>
+									  <td>
+									  	<img style="width:20px; height:20px" src="${retData[i].logo}"/>
+									  	<span>${retData[i].name}</span>
+									  </td>
+									  <td>${retData[i].current_price}</td>
+									  <td>${retData[i].current_price_usd}</td>
+									  <td>${ mar } 亿</td>
+									  <td>${cap} 亿</td>
+									  <td>${retData[i].turnoverrate}%</td>`
+									  if (retData[i].change_percent < 0) {
+									  		html += `<td style="color:red">${retData[i].change_percent}</td>`
+									  }
+									  if (retData[i].change_percent >= 0) {
+									  		html += `<td style="color:green">${retData[i].change_percent}</td>`
+									  }
+									  html +=`
+								</tr>
+            	 `
+            }
+            Dom.append(html);
+        }
+    })
+</script>
+{% block panelScript %}
+{% endblock %}
+{% endblock %}
+
+ 	 	   	 		

@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<link type="text/css" rel="stylesheet" href='{% static "css/swap.css" %}'>
+<div id="main-container" class="container clearfix">
+    <section class="pc-banner">
+        <div class="swiper-container">
+            <div class="swiper-wrapper">
+                <div class="swiper-slide swiper-slide-center none-effect">
+                    <a href="#">
+                        <img src="{% url 'index' %}media/banner/1.png" srcset="">
+                    </a>
+                    <div class="layer-mask"></div>
+                </div>
+                 {% for ab in act_banner %}
+                <div class="swiper-slide">
+                    <a href="#">
+                        <img src="{% url 'index' %}media/{{ ab.img }}" srcset="{% url 'index' %}media/{{ ab.img }}" alt="{{ ab.text_info }}">
+                    </a>
+                    <div class="layer-mask"></div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="button">
+                <div class="swiper-button-prev"></div>
+                <div class="swiper-button-next"></div>
+            </div>
+        </div>
+    </section>
+
+    <div class="clearfix navcat">
+        <nav class="nav fl">
+            <ul id="fix-list" class="fix-list clearfix">
+                 <li id="menu-item-117720" class="menu-item">
+                     <a href="{% url 'activity' %}"><h4 style="font-size:20px; color:#393939; margin-left:-22px; margin-bottom:15px; padding:5px 0 5px 18px; text-align:left; font-weight:bold;">全部活动</h4></a>
+                 </li>
+                {% for act in actcat %}
+                    <li id="menu-item-117720" class="menu-item">
+                        <a href="{% url 'index' %}activity_list-{{ act.id }}.html"><h4 style="font-size:20px; color:#393939; margin-left:-22px; margin-bottom:15px; padding:5px 0 5px 18px; text-align:left; font-weight:bold;">{{ act.name }}</h4></a>
+                    </li>
+                {% endfor %}
+             </ul>
+         </nav>
+    </div>
+
+    <div style="border-bottom:solid gray 1px; margin-bottom: 20px;"></div>
+    <div class="clearfix navcat">
+        <nav class="nav fl">
+            <ul id="fix-list" class="fix-list clearfix">
+                {% for ar in area %}
+                    <li id="menu-item-117720" class="menu-item">
+                        <a href="{% url 'index' %}activity_tag/{{ ar.name }}">{{ ar.name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </nav>
+    </div>
+
+    <div class="row record-act">
+     {% for latart in allarticle %}
+         <a href="{% url 'index' %}activity_show-{{ latart.id }}.html" title="{{ latart.title }}">
+              <div class="col-md-4">
+                <div class="thumbnail">
+                  <img style="height:280px" src="{% url 'index' %}media/{{ latart.img }}" srcset="{% url 'index' %}media/{{ latart.img }}" alt="aaa">
+                  <div class="caption">
+                    <h4>{{ latart.title }}</h4>
+                    {% if latart.is_active == True %}
+                    <p style="margin-top: 15px;overflow: hidden;clear: both;">
+                        <span style="float: left">
+                             <i class="glyphicon glyphicon-home" style="margin-right: 10px"></i>
+                            {{ latart.company }}
+                        </span>
+                        <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                            报名中
+                        </span>
+                    </p>
+                    {% elif latart.is_active != True %}
+                         <p style="margin-top:15px;overflow: hidden;clear: both;">
+                             <span style="float: left">
+                              <i class="glyphicon glyphicon-home" style="margin-right: 10px"></i>
+                                 {{ latart.company }}
+                             </span>
+                             <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                                已结束
+                            </span>
+                        </p>
+                    {% endif %}
+                    <p style="margin-top:10px">
+                        <i class="glyphicon glyphicon-time" style="margin-right: 10px"></i>
+                        {{latart.acttime }}
+                    </p>
+                  </div>
+                </div>
+              </div>
+         </a>
+      {% endfor %}
+   </div>
+   <div style="margin-left:45%"><button class="more" id="More">点击加载更多</button></div>
+</div>
+<script src="{% static 'js/jquery.min.js' %}"></script>
+<script type="text/javascript">
+	window.onload = function() {
+		var swiper = new Swiper('.swiper-container',{
+			autoplay: false,
+			speed: 1000,
+			autoplayDisableOnInteraction: false,
+			loop: true,
+			centeredSlides: true,
+			slidesPerView: 2,
+			pagination: '.swiper-pagination',
+			paginationClickable: true,
+			prevButton: '.swiper-button-prev',
+			nextButton: '.swiper-button-next',
+			onInit: function(swiper) {
+				swiper.slides[2].className = "swiper-slide swiper-slide-active";
+			},
+			breakpoints: {
+				668: {
+					slidesPerView: 1,
+				}
+			}
+		});
+	};
+</script>
+<script>
+    var Dom = jQuery('.record-act');
+    var pages = 2;
+    jQuery('#More').on('click', function(){
+        let l_url=window.location.href;
+        let req_url = l_url+ "?page=" +  pages;
+        let html = '';
+        jQuery.ajax({
+            type:'GET',
+            url:req_url,
+            dataType:'json',
+            success:function(response, status) {
+                let retData = JSON.parse(response.result.activity);
+                if(retData.length > 1 ) {
+                    for(let i  = 0; i < retData.length; i++) {
+                       html += `
+                          <a href="{% url 'index' %}activity_show-${ retData[i].pk }.html" title="${retData[i].fields.title}">
+                              <div class="col-md-4">
+                                <div class="thumbnail">
+                                  <img style="height:280px" src="{% url 'index' %}media/${retData[i].fields.img}" srcset="" alt="">
+                                  <div class="caption">
+                                    <h4>${retData[i].fields.title}</h4>`
+                                    if (retData[i].fields.is_active == true) {
+                                       html += `
+                                       <p style="margin-top: 15px;overflow: hidden;clear: both;">
+                                        <span style="float: left">
+                                           <i class="glyphicon glyphicon-home" style="margin-right: 10px"></i>
+                                           ${ retData[i].fields.company }
+                                        </span>
+                                        <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                                            报名中
+                                        </span>
+                                    </p>`
+                                    }
+                                    if (retData[i].fields.is_active != true) {
+                                        html += `
+                                         <p style="margin-top:15px;overflow: hidden;clear: both;">
+                                             <span style="float: left">
+                                              <i class="glyphicon glyphicon-home" style="margin-right: 10px"></i>
+                                                 ${ retData[i].fields.company }
+                                             </span>
+                                             <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                                                已结束
+                                            </span>
+                                        </p>
+                                        `
+                                    }
+                                    html += `
+                                    <p style="margin-top:10px">
+                                        <i class="glyphicon glyphicon-time" style="margin-right: 10px"></i>
+                                        ${ retData[i].fields.acttime }
+                                    </p>
+                                  </div>
+                                </div>
+                              </div>
+                         </a>`
+                    }
+                    Dom.append(html);
+                } else {
+                    jQuery('#More').text("没有了，已经见低了");
+                }
+            }
+        });
+        pages = pages + 1;
+    })
+</script>
+{% block panelScript %}
+{% endblock %}
+{% endblock %}

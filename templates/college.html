@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<div id="main-container" class="container clearfix">
+        <div class="index-main clearfix">
+            <div class="row">
+            <div class="article-box clearfix excerpt-1">
+            {% for college in allcollege %}
+                <a href="{% url 'index' %}college_show-{{ college.id }}.html" title="{{ college.title }}">
+                      <div class="col-md-4">
+                        <div class="thumbnail">
+                          <img src="{% url 'index' %}media/{{ college.img }}" srcset="{% url 'index' %}media/{{ college.img }}" alt="aaa">
+                          <div class="caption">
+                            <h4>{{ college.title }}</h4>
+                            {% if college.is_active == True %}
+                            <p style="margin-top: 15px;overflow: hidden;clear: both;"><span style="float: left">{{ college.company }}</span> <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                                报名中
+                                </span>
+                            </p>
+                            {% elif college.is_active != True %}
+                                 <p style="margin-top: 15px;overflow: hidden;clear: both;"><span style="float: left">{{ college.company }}</span> <span style="float: right;text-align:center; border-radius: 5px;background-color: #e64a50;color: #fff;padding: 2px 5px;">
+                                已结束
+                                 </span>
+                            </p>
+                            {% endif %}
+                              <p>{{college.created_time }}</p>
+                          </div>
+                        </div>
+                      </div>
+                 </a>
+            {% endfor %}
+            </div>
+            <div class="pagination">
+                <ul>
+                    {% if allcollege.has_previous %}
+                    <li class="prev-page"><a href="?page={{ allcollege.previous_page_number }}">上一页</a></li>
+                    {% else %}
+                     <li class="prev-page"></li>
+                    {% endif %}
+                        {% for num in allcollege.paginator.page_range %}
+                            {% if num %}
+                                {% ifequal num allcollege.number %}
+                                    <li class="active"><span>{{ num }}</span></li>
+                                {% else %}
+                                    <li><a href="?page={{ num }}">{{ num }}</a></li>
+                                {% endifequal %}
+                            {% else %}
+                                <li class="disabled"><span>...</span></li>
+                            {% endif %}
+                        {% endfor %}
+                        {% if allcollege.has_next %}
+                            <li class="next-page"><a href="?page={{ allcollege.next_page_number }}">下一页</a></li>
+                        {% else %}
+                            <li class="prev-page"></li>
+                        {% endif %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

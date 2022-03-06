@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load staticfiles %}
+{% block content %}
+<style>
+    .activity-act {
+        font-size: 18px;
+        display: block;
+        font-family: PingFangSC-Medium;
+        font-weight: 500;
+        color: rgba(18,17,21,1);
+        line-height: 30px;
+        margin: 30px 0;
+        width: 72px;
+        border-bottom: 2px solid rgba(18,17,21,1);
+    }
+</style>
+<div id="main-container" class="container clearfix">
+    <section class="post-left">
+        <div class="post-main clearfix">
+            <h1 class="post-title">{{ activity_show.title }}</h1>
+            <div class="post-con clearfix">
+                <div style="font-size:16px; text-align:center">主办方：{{ activity_show.company }}</div>
+                <div style="margin-top:10px; text-align:center"><img src="{% url 'index' %}media/{{ activity_show.img }}"></div>
+                <div style="margin-top:10px">
+                    <span class="activity-act">活动介绍</span>
+                    <p style="font-size:16px">{{ activity_show.excerpt }}</p>
+                </div>
+                <div style="margin-top:10px">
+                    <article class="article-content">{{ activity_show.body|safe }}</article>
+                </div>
+            </div>
+        </div>
+    </section>
+{% include 'activity_right.html' %}
+</div>
+{% block panelScript %}
+{% endblock %}
+{% endblock %}
